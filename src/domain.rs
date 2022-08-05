@@ -1,5 +1,4 @@
 pub mod Domain {
-    use std::array;
     use strum_macros::EnumString;
 
 
@@ -18,7 +17,7 @@ pub mod Domain {
         pub symbol: Symbol
     }
 
-    #[derive(Debug, EnumString)]
+    #[derive(Debug, EnumString, Clone, Copy)]
     pub enum Symbol {
         X,
         O

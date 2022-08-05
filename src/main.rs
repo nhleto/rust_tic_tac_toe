@@ -1,4 +1,4 @@
-use std::{io, str::FromStr};
+use std::{io};
 mod domain;
 use domain::Domain::{self, Symbol};
 
@@ -8,7 +8,7 @@ fn main() {
         player2: Domain::Player { name: String::new(), symbol: Domain::Symbol::O },
         board: Domain::Board {},
         answers: [String::from("1"), String::from("2"), String::from("3"),String::from("4"), String::from("5"), String::from("6"),String::from("7"), String::from("8"), String::from("9")],
-        currentPlayer: Domain::Player { name: String::from("nice"), symbol: Symbol::O }
+        currentPlayer: Domain::Player { name: String::new(), symbol: Symbol::O }
     };
 
     game.start_game();
@@ -19,8 +19,8 @@ impl Domain::Game {
         self.assign_user_names();
         println!("{:?}, {:?}", self.player1, self.player2);
         self.board.draw_board(&self.answers);
-        let player = self.get_player();
-        let guess = self.get_guess();
+        self.get_player();
+        self.get_guess();
     }
 
     fn assign_user_names(&mut self) {
@@ -41,8 +41,6 @@ impl Domain::Game {
 
     fn get_guess(&mut self) -> u8 {
         println!("{}, make your move", &self.player1.name);
-        let mut guess = String::new();
-        io::stdin().read_line(&mut guess).expect("failed to readline");
         Domain::Game::parse_guess()
     }
 
@@ -50,21 +48,22 @@ impl Domain::Game {
         loop {
             let mut input_buffer = String::new();
 
-            std::io::stdin()
+            io::stdin()
                 .read_line(&mut input_buffer)
                 .expect("Failed to read input!");
                 
-            if let Ok(o) = input_buffer.trim().parse::<u8>() {
-                return o;
+            match input_buffer.trim().parse::<u8>() {
+                Ok(result) => return result,
+                Err(er) => println!("Invalid input. Error: {}", er),
             }
         }
     }
 
     fn get_player(&mut self) {
-        match self.currentPlayer.symbol {
-            Symbol::X => self.currentPlayer = self.player2,
-            _ => self.currentPlayer = self.player1
-        }
+        self.currentPlayer = match self.currentPlayer.symbol {
+            Symbol::X => self.player1,
+            Symbol::O => self.player2,
+        };
 
         println!("The current player is: {:?}", self.currentPlayer)
     }
