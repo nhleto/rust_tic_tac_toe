@@ -1,20 +1,20 @@
 use std::{io};
 mod domain;
-use domain::Domain::{self, Symbol};
+use domain::Domain::{self, Symbol, Game};
 
 fn main() {
-    let mut game = Domain::Game {
+    let mut game = Game {
         player1: Domain::Player { name: String::new(), symbol: Domain::Symbol::X },
         player2: Domain::Player { name: String::new(), symbol: Domain::Symbol::O },
         board: Domain::Board {},
         answers: [String::from("1"), String::from("2"), String::from("3"),String::from("4"), String::from("5"), String::from("6"),String::from("7"), String::from("8"), String::from("9")],
-        currentPlayer: Domain::Player { name: String::new(), symbol: Symbol::O }
+        current_player: &mut Domain::Player { name: String::from(""), symbol: Symbol::O }
     };
 
     game.start_game();
 }
 
-impl Domain::Game {
+impl<'a> Game<'a> {
     fn start_game(&mut self) {
         self.assign_user_names();
         println!("{:?}, {:?}", self.player1, self.player2);
@@ -41,7 +41,7 @@ impl Domain::Game {
 
     fn get_guess(&mut self) -> u8 {
         println!("{}, make your move", &self.player1.name);
-        Domain::Game::parse_guess()
+        Game::parse_guess()
     }
 
     fn parse_guess() -> u8 {
@@ -60,12 +60,12 @@ impl Domain::Game {
     }
 
     fn get_player(&mut self) {
-        self.currentPlayer = match self.currentPlayer.symbol {
-            Symbol::X => self.player1,
-            Symbol::O => self.player2,
+        self.current_player = match self.current_player.symbol {
+            Symbol::X => &self.player1,
+            Symbol::O => &self.player2,
         };
 
-        println!("The current player is: {:?}", self.currentPlayer)
+        println!("The current player is: {:?}", self.current_player)
     }
 
     fn validate_guess_against_board(&self, guess: u8) {

@@ -1,14 +1,13 @@
 pub mod Domain {
     use strum_macros::EnumString;
 
-
     #[derive(Debug)]
-    pub struct Game {
+    pub struct Game<'a> {
         pub player1: Player,
         pub player2: Player,
         pub board: Board,
         pub answers: [String; 9],
-        pub currentPlayer: Player
+        pub current_player: &'a Player
     }
     
     #[derive(Debug)]
