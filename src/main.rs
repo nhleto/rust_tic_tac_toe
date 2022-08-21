@@ -41,13 +41,12 @@ impl<'a> Game<'a> {
     fn get_guess(&mut self) {
         loop {
             println!("{}, make your move", &self.player1.name);
-            let guess = self.parse_guess();
-            self.validate_guess_against_board(guess as usize);
+            self.parse_guess();
             self.board.draw_board(&self.answers);
         }
     }
 
-    fn parse_guess(&mut self) -> u8 {
+    fn parse_guess(&mut self) {
         loop {
             let mut input_buffer = String::new();
 
@@ -55,19 +54,19 @@ impl<'a> Game<'a> {
                 .read_line(&mut input_buffer)
                 .expect("Failed to read input!");
                 
-             match input_buffer.trim().parse::<u8>() {
-                Ok(result) => return result,
-                Err(er) => println!("error while parsing {}", er),
+            match input_buffer.trim().parse::<usize>() {
+                Ok(result) => {
+                    self.validate_guess_against_board(result);
+                },
+                Err(er) => println!("Invald input: {}", &er),
             };
         }
     }
 
     fn validate_guess_against_board(&mut self, guess: usize) {
         match self.answers[guess] != Symbol::X.to_string() || self.answers[guess] != Symbol::O.to_string() {
-            true => {
-                self.answers[guess] = Symbol::X.to_string();
-            },
-            false => print!("Try again"),
+            true => self.answers[guess] = Symbol::X.to_string(),
+            false => println!("Try again"),
         }
     }
 
