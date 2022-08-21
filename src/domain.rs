@@ -1,5 +1,5 @@
 pub mod Domain {
-    use strum_macros::EnumString;
+    use strum_macros::{EnumString, Display};
 
     #[derive(Debug)]
     pub struct Game<'a> {
@@ -16,7 +16,7 @@ pub mod Domain {
         pub symbol: Symbol
     }
 
-    #[derive(Debug, EnumString, Clone, Copy)]
+    #[derive(Debug, EnumString, Clone, Copy, Display)]
     pub enum Symbol {
         X,
         O

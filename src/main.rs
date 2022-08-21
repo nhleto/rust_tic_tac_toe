@@ -19,7 +19,6 @@ impl<'a> Game<'a> {
         self.assign_user_names();
         println!("{:?}, {:?}", self.player1, self.player2);
         self.board.draw_board(&self.answers);
-        self.get_player();
         self.get_guess();
     }
 
@@ -39,12 +38,16 @@ impl<'a> Game<'a> {
         input
     }
 
-    fn get_guess(&mut self) -> u8 {
-        println!("{}, make your move", &self.player1.name);
-        Game::parse_guess()
+    fn get_guess(&mut self) {
+        loop {
+            println!("{}, make your move", &self.player1.name);
+            let guess = self.parse_guess();
+            self.validate_guess_against_board(guess as usize);
+            self.board.draw_board(&self.answers);
+        }
     }
 
-    fn parse_guess() -> u8 {
+    fn parse_guess(&mut self) -> u8 {
         loop {
             let mut input_buffer = String::new();
 
@@ -52,27 +55,32 @@ impl<'a> Game<'a> {
                 .read_line(&mut input_buffer)
                 .expect("Failed to read input!");
                 
-            match input_buffer.trim().parse::<u8>() {
+             match input_buffer.trim().parse::<u8>() {
                 Ok(result) => return result,
-                Err(er) => println!("Invalid input. Error: {}", er),
-            }
+                Err(er) => println!("error while parsing {}", er),
+            };
         }
     }
 
-    fn get_player(&mut self) {
-        self.current_player = match self.current_player.symbol {
-            Symbol::X => &self.player1,
-            Symbol::O => &self.player2,
-        };
-
-        println!("The current player is: {:?}", self.current_player)
-    }
-
-    fn validate_guess_against_board(&self, guess: u8) {
-        // if self.answers[guess - 1] != 
+    fn validate_guess_against_board(&mut self, guess: usize) {
+        match self.answers[guess] != Symbol::X.to_string() || self.answers[guess] != Symbol::O.to_string() {
+            true => {
+                self.answers[guess] = Symbol::X.to_string();
+            },
+            false => print!("Try again"),
+        }
     }
 
     fn print_type_of<T>(_: &T) {
         println!("{}", std::any::type_name::<T>())
     }
+    
+    // fn get_player(&mut self) {
+    //     self.current_player = match self.current_player.symbol {
+    //         Symbol::X => &self.player1,
+    //         Symbol::O => &self.player2,
+    //     };
+
+    //     println!("The current player is: {:?}", self.current_player)
+    // }
 }
