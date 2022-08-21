@@ -39,11 +39,9 @@ impl<'a> Game<'a> {
     }
 
     fn get_guess(&mut self) {
-        loop {
-            println!("{}, make your move", &self.player1.name);
-            self.parse_guess();
-            self.board.draw_board(&self.answers);
-        }
+        println!("{}, make your move", &self.player1.name);
+        self.parse_guess();
+        self.board.draw_board(&self.answers);
     }
 
     fn parse_guess(&mut self) {
@@ -55,18 +53,25 @@ impl<'a> Game<'a> {
                 .expect("Failed to read input!");
                 
             match input_buffer.trim().parse::<usize>() {
-                Ok(result) => {
-                    self.validate_guess_against_board(result);
+                Ok(result) => if self.validate_guess_against_board(result) {
+                    break
                 },
                 Err(er) => println!("Invald input: {}", &er),
             };
         }
     }
 
-    fn validate_guess_against_board(&mut self, guess: usize) {
-        match self.answers[guess] != Symbol::X.to_string() || self.answers[guess] != Symbol::O.to_string() {
-            true => self.answers[guess] = Symbol::X.to_string(),
-            false => println!("Try again"),
+    fn validate_guess_against_board(&mut self, guess: usize) -> bool {
+        let adjusted_guess = guess - 1;
+        match self.answers[adjusted_guess] != Symbol::X.to_string() && self.answers[adjusted_guess] != Symbol::O.to_string() {
+            true => {
+                self.answers[adjusted_guess] = self.current_player.symbol.to_string();
+                true
+            },
+            false => {
+                println!("That spot is already taken");
+                false
+            }
         }
     }
 
