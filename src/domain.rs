@@ -7,7 +7,8 @@ pub mod Domain {
         pub player2: Player,
         pub board: Board,
         pub answers: [String; 9],
-        pub current_player: &'a Player
+        pub current_player: &'a Player,
+        pub game_over: bool
     }
     
     #[derive(Debug)]

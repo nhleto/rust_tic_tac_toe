@@ -1,6 +1,7 @@
 use std::{io};
 mod domain;
 use domain::Domain::{self, Symbol, Game};
+use sub_array::SubArray;
 
 fn main() {
     let mut game = Game {
@@ -8,7 +9,8 @@ fn main() {
         player2: Domain::Player { name: String::new(), symbol: Domain::Symbol::O },
         board: Domain::Board {},
         answers: [String::from("1"), String::from("2"), String::from("3"),String::from("4"), String::from("5"), String::from("6"),String::from("7"), String::from("8"), String::from("9")],
-        current_player: &mut Domain::Player { name: String::from(""), symbol: Symbol::O }
+        current_player: &mut Domain::Player { name: String::from(""), symbol: Symbol::O },
+        game_over: false
     };
 
     game.start_game();
@@ -18,8 +20,15 @@ impl<'a> Game<'a> {
     fn start_game(&mut self) {
         self.assign_user_names();
         println!("{:?}, {:?}", self.player1, self.player2);
-        self.board.draw_board(&self.answers);
-        self.get_guess();
+        self.game_loop();
+    }
+
+    fn game_loop(&mut self) {
+        while !self.game_over {
+            self.board.draw_board(&self.answers);
+            self.get_guess();
+            self.check_answer();
+        }
     }
 
     fn assign_user_names(&mut self) {
@@ -75,8 +84,21 @@ impl<'a> Game<'a> {
         }
     }
 
-    fn print_type_of<T>(_: &T) {
-        println!("{}", std::any::type_name::<T>())
+    fn check_answer(&mut self) {
+        let mut tracker: u8 = 0;
+        for (i, element) in self.answers.iter().enumerate() {
+            if self.answers[i] != String::from("O") && self.answers[i] != String::from("X") {
+                tracker = 0;
+                continue;
+            }
+
+            tracker += 1;
+
+            if tracker == 3 {
+                self.game_over = true;
+                return
+            }
+        }
     }
     
     // fn get_player(&mut self) {
