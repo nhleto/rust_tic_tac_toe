@@ -1,7 +1,7 @@
 use std::{io};
 mod domain;
+use array2d::Array2D;
 use domain::Domain::{self, Symbol, Game};
-use sub_array::SubArray;
 
 fn main() {
     let mut game = Game {
@@ -86,6 +86,12 @@ impl<'a> Game<'a> {
 
     fn check_answer(&mut self) {
         let mut tracker: u8 = 0;
+        let two_d_array = &mut Array2D::from_row_major(&self.answers.to_vec(), 3, 3);
+
+        for row_iter in two_d_array.rows_iter() {
+            if row_iter.all(|&elem| elem !=  )
+        }
+
         for (i, element) in self.answers.iter().enumerate() {
             if self.answers[i] != String::from("O") && self.answers[i] != String::from("X") {
                 tracker = 0;
