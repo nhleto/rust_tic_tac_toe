@@ -85,24 +85,17 @@ impl<'a> Game<'a> {
     }
 
     fn check_answer(&mut self) {
-        let mut tracker: u8 = 0;
         let two_d_array = &mut Array2D::from_row_major(&self.answers.to_vec(), 3, 3);
 
-        for row_iter in two_d_array.rows_iter() {
-            if row_iter.all(|&elem| elem !=  )
+        for mut row_iter in two_d_array.rows_iter() {
+            if row_iter.all(|elem| elem.to_string() == Symbol::X.to_string() || elem.to_string() == Symbol::O.to_string()) {
+                return self.game_over = true;
+            }
         }
 
-        for (i, element) in self.answers.iter().enumerate() {
-            if self.answers[i] != String::from("O") && self.answers[i] != String::from("X") {
-                tracker = 0;
-                continue;
-            }
-
-            tracker += 1;
-
-            if tracker == 3 {
-                self.game_over = true;
-                return
+        for mut columns_iter in two_d_array.columns_iter() {
+            if columns_iter.all(|elem| elem.to_string() == Symbol::X.to_string() || elem.to_string() == Symbol::O.to_string()) {
+                return self.game_over = true;
             }
         }
     }
