@@ -1,4 +1,5 @@
 pub mod Domain {
+    use array2d::Array2D;
     use strum_macros::{EnumString, Display};
 
     #[derive(Debug)]
@@ -28,6 +29,7 @@ pub mod Domain {
 
     impl Board {
         pub fn draw_board(&self, answers: &[String]) {
+            println!("\n");
             println!("{}|{}|{}", answers[0], answers[1], answers[2]);
             println!("-----");
             println!("{}|{}|{}", answers[3], answers[4], answers[5]);

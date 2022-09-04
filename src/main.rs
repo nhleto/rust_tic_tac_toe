@@ -24,10 +24,11 @@ impl<'a> Game<'a> {
     }
 
     fn game_loop(&mut self) {
-        while !self.game_over {
+        let mut game_over = false;
+        while !game_over {
             self.board.draw_board(&self.answers);
             self.get_guess();
-            self.check_answer();
+            game_over = self.check_answer();
         }
     }
 
@@ -84,20 +85,64 @@ impl<'a> Game<'a> {
         }
     }
 
-    fn check_answer(&mut self) {
+    fn check_answer(&mut self) -> bool {
         let two_d_array = &mut Array2D::from_row_major(&self.answers.to_vec(), 3, 3);
+        let mut right_diagonal = 0;
+        let mut left_diagonal = 0;
 
+        // Solve diagonal
+        for (i, elem) in two_d_array.as_rows().iter().enumerate() {
+            if i == 0 && (elem[0] == Symbol::X.to_string() || elem[0] == Symbol::O.to_string()) {
+                right_diagonal += 1;
+            }
+
+            if i == 1 && (elem[1] == Symbol::X.to_string() || elem[1] == Symbol::O.to_string()) {
+                right_diagonal += 1;
+            }
+
+            if i == 2 && (elem[elem.len() - 1] == Symbol::X.to_string() || elem[elem.len() - 1] == Symbol::O.to_string()) {
+                right_diagonal += 1;
+            }
+
+            if right_diagonal == 3 {
+                return true
+            }
+        }
+
+        // Solve inverse diagonal
+        for (i, elem) in two_d_array.as_rows().iter().enumerate() {
+            if i == 0 && elem[elem.len() - 1] == Symbol::X.to_string() || elem[elem.len() - 1] == Symbol::O.to_string() {
+                left_diagonal += 1;
+            }
+
+            if i == 1 && (elem[1] == Symbol::X.to_string() || elem[1] == Symbol::O.to_string()) {
+                left_diagonal += 1;
+            }
+
+            if i == 2 && (elem[0] == Symbol::X.to_string() || elem[0] == Symbol::O.to_string()) {
+                left_diagonal += 1;
+            }
+
+            if left_diagonal == 3 {
+                return true
+            }
+        }
+        
+        // Solve horizontal
         for mut row_iter in two_d_array.rows_iter() {
             if row_iter.all(|elem| elem.to_string() == Symbol::X.to_string() || elem.to_string() == Symbol::O.to_string()) {
-                return self.game_over = true;
+                return true
             }
         }
 
+        // Solve vertical
         for mut columns_iter in two_d_array.columns_iter() {
             if columns_iter.all(|elem| elem.to_string() == Symbol::X.to_string() || elem.to_string() == Symbol::O.to_string()) {
-                return self.game_over = true;
+                return true
             }
         }
+
+        false
     }
     
     // fn get_player(&mut self) {
